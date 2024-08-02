@@ -1,8 +1,0 @@
-[build]
-  functions = "netlify/functions"
-  publish = "public"  # Directory for static files
-
-[[redirects]]
-  from = "/*"
-  to = "/views/index.ejs"
-  status = 200
