@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const port = 3000;
 const path = require('path');
 
 const http = require("http");
@@ -9,6 +8,7 @@ const server = http.createServer(app);
 const io = Socket(server);
 
 app.set("view engine", "ejs");
+app.set('views', path.join(__dirname, 'public'));
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from 'public'
 
 io.on("connection", function(socket){
@@ -24,11 +24,12 @@ io.on("connection", function(socket){
     console.log("connected"); // Log when a user connects
 });
 
+
+
 app.get('/', (req, res) => {
     res.render("index"); // Render 'index' from the 'views' directory
 });
 
-server.listen(port, () => 
-    console.log(`Example app listening on port ${port}!`)
+server.listen(process.env.PORT, () => 
+    console.log(`Example app listening on port ${process.env.PORT}!`)
 );
-
