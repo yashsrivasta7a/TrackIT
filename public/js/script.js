@@ -14,7 +14,7 @@ if (!navigator.geolocation) {
             },
             {
                 enableHighAccuracy: true,
-                timeout: 2000,
+                timeout: 5000,
                 maximumAge: 0 // No caching
             }
         );
@@ -40,7 +40,7 @@ var openTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
 
 const map = L.map("map", {
     center: [0, 0],
-    zoom: 15,
+    zoom: 25,
     layers: [normal] // Set OpenTopoMap as the default layer
 });
 
@@ -66,7 +66,7 @@ socket.on("recivedLocation", (data)=>{
     }
     else{
         marker[id] = L.marker([latitude,longitude]).addTo(map)
-        .bindPopup('OH! SO,<br>HERE YOU ARE.').openPopup(); // Add popup to the marker
+        .bindPopup('OH <br>I Caught You .').openPopup(); // Add popup to the marker
     }
 })
 
