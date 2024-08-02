@@ -4,8 +4,11 @@ const path = require('path');
 
 const http = require("http");
 const Socket = require('socket.io');
+const dotenv = require('dotenv');
 const server = http.createServer(app);
 const io = Socket(server);
+
+dotenv.config();
 
 app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, 'public'));
