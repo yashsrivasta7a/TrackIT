@@ -10,6 +10,7 @@ if (!navigator.geolocation) {
         navigator.geolocation.watchPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
+                console.log(`Sending location: ${latitude}, ${longitude}`); // Log sent coordinates
                 const currentTime = Date.now();
 
                 if (currentTime - lastEmitTime > emitInterval) {
@@ -59,17 +60,17 @@ layerControl.addBaseLayer(openTopoMap, "OpenTopoMap");
 
 const marker = {};
 
-socket.on("recivedLocation", (data)=>{
-    const { id, latitude, longitude} = data;
-    map.setView([latitude,longitude])
-    if(marker[id]){
-        marker[id].setLatLng([latitude,longitude])
+socket.on("recivedLocation", (data) => {
+    const { id, latitude, longitude } = data;
+    console.log(`Received location: ${latitude}, ${longitude}`); // Log received coordinates
+    map.setView([latitude, longitude]);
+    if (marker[id]) {
+        marker[id].setLatLng([latitude, longitude]);
+    } else {
+        marker[id] = L.marker([latitude, longitude]).addTo(map)
+            .bindPopup('OH <br>I Caught You .').openPopup(); // Add popup to the marker
     }
-    else{
-        marker[id] = L.marker([latitude,longitude]).addTo(map)
-        .bindPopup('OH <br>I Caught You .').openPopup(); // Add popup to the marker
-    }
-})
+});
 
 socket.on("UserDisconnected",(id)=>{
     if(marker[id]){
