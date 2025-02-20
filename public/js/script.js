@@ -6,12 +6,13 @@ if (!navigator.geolocation) {
     try {
         let lastEmitTime = 0;
         const emitInterval = 2000; 
+        let userCounter = 1; 
 
         navigator.geolocation.watchPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                const deviceName = "Your Device Name"; // Replace with actual device name
-                console.log(`Sending location: ${latitude}, ${longitude}`); // Log sent coordinates
+                const deviceName = `User ${userCounter++}`;
+                console.log(`Sending location: ${latitude}, ${longitude}`); 
                 const currentTime = Date.now();
 
                 if (currentTime - lastEmitTime > emitInterval) {
@@ -23,9 +24,9 @@ if (!navigator.geolocation) {
                 console.log("Geolocation error: ", error.message);
             },
             {
-                enableHighAccuracy: false, // Set to false to reduce resource usage
-                timeout: 10000, // Increase timeout to 10 seconds
-                maximumAge: 5000 // Cache position for 5 seconds
+                enableHighAccuracy: false, 
+                timeout: 10000,
+                maximumAge: 5000 
             }
         );
     } catch (error) {
@@ -47,8 +48,8 @@ var openTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
 
 const map = L.map("map", {
     center: [0, 0],
-    zoom: 15, // Reduce zoom level to optimize rendering
-    layers: [normal] // Set OpenTopoMap as the default layer
+    zoom: 15, 
+    layers: [normal] 
 });
 
 var baseMaps = {
@@ -60,10 +61,12 @@ var layerControl = L.control.layers(baseMaps).addTo(map);
 layerControl.addBaseLayer(openTopoMap, "OpenTopoMap");
 
 const marker = {};
+let otherPersonLocation = null; 
 
 socket.on("recivedLocation", (data) => {
     const { id, latitude, longitude, deviceName } = data;
-    console.log(`Received location: ${latitude}, ${longitude}`); // Log received coordinates
+    console.log(`Received location: ${latitude}, ${longitude}`); 
+    otherPersonLocation = { latitude, longitude }; 
     map.setView([latitude, longitude]);
     if (marker[id]) {
         marker[id].setLatLng([latitude, longitude]);
@@ -72,6 +75,20 @@ socket.on("recivedLocation", (data) => {
             .bindPopup(`${deviceName} <br>is here.`).openPopup(); 
     }
 });
+
+const button = document.createElement('button');
+button.innerText = 'Go to Other Person';
+button.style.position = 'absolute';
+button.style.top = '10px';
+button.style.right = '10px';
+button.onclick = () => {
+    if (otherPersonLocation) {
+        map.setView([otherPersonLocation.latitude, otherPersonLocation.longitude], 15);
+    } else {
+        alert('No location data available for the other person.');
+    }
+};
+document.body.appendChild(button); 
 
 socket.on("UserDisconnected",(id)=>{
     if(marker[id]){
