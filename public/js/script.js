@@ -6,17 +6,15 @@ if (!navigator.geolocation) {
     try {
         let lastEmitTime = 0;
         const emitInterval = 2000; 
-        let userCounter = 1; 
 
         navigator.geolocation.watchPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                const deviceName = `User ${userCounter++}`;
                 console.log(`Sending location: ${latitude}, ${longitude}`); 
                 const currentTime = Date.now();
 
                 if (currentTime - lastEmitTime > emitInterval) {
-                    socket.emit("location", { latitude, longitude, deviceName });
+                    socket.emit("location", { latitude, longitude });
                     lastEmitTime = currentTime;
                 }
             },
@@ -76,11 +74,10 @@ socket.on("recivedLocation", (data) => {
     }
 });
 
+// Add button to go to the location of another person
 const button = document.createElement('button');
+button.id = 'go-to-other-person';
 button.innerText = 'Go to Other Person';
-button.style.position = 'absolute';
-button.style.top = '10px';
-button.style.right = '10px';
 button.onclick = () => {
     if (otherPersonLocation) {
         map.setView([otherPersonLocation.latitude, otherPersonLocation.longitude], 15);
