@@ -5,16 +5,17 @@ if (!navigator.geolocation) {
 } else {
     try {
         let lastEmitTime = 0;
-        const emitInterval = 2000; // Emit location every 2 seconds
+        const emitInterval = 2000; 
 
         navigator.geolocation.watchPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
+                const deviceName = "Your Device Name"; // Replace with actual device name
                 console.log(`Sending location: ${latitude}, ${longitude}`); // Log sent coordinates
                 const currentTime = Date.now();
 
                 if (currentTime - lastEmitTime > emitInterval) {
-                    socket.emit("location", { latitude, longitude });
+                    socket.emit("location", { latitude, longitude, deviceName });
                     lastEmitTime = currentTime;
                 }
             },
@@ -61,14 +62,14 @@ layerControl.addBaseLayer(openTopoMap, "OpenTopoMap");
 const marker = {};
 
 socket.on("recivedLocation", (data) => {
-    const { id, latitude, longitude } = data;
+    const { id, latitude, longitude, deviceName } = data;
     console.log(`Received location: ${latitude}, ${longitude}`); // Log received coordinates
     map.setView([latitude, longitude]);
     if (marker[id]) {
         marker[id].setLatLng([latitude, longitude]);
     } else {
         marker[id] = L.marker([latitude, longitude]).addTo(map)
-            .bindPopup('OH <br>I Caught You .').openPopup(); // Add popup to the marker
+            .bindPopup(`${deviceName} <br>is here.`).openPopup(); 
     }
 });
 
